@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Coverage / reports
+coverage/
+
+# Env (only if you ever add one at root)
+.env
+.env.*
+
+# Tooling / temp
+.tmp/
+.cache/

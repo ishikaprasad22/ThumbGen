@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --font-poppins: "Poppins", sans-serif;
+}
+
+body {
+    @apply bg-black text-white text-sm antialiased font-poppins;
+}
+
+body::selection {
+    @apply bg-pink-600 text-white;
+}
+
+button {
+    @apply cursor-pointer;
+}
+
+.move-gradient {
+    background-image: linear-gradient(to right, var(--color-pink-500), var(--color-pink-300));
+    background-size: 200% 100%;
+    animation: movegradient 5s infinite;
+}
+
+@keyframes movegradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Created By Section Styles */
+.created-by-box {
+    @apply flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-xl backdrop-blur transition-all duration-300;
+    box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+}
+/* Prevent scroll chaining */
+body {
+  overscroll-behavior: auto;
+}
+
+#chatbot-container {
+  overscroll-behavior: contain;
+}
+
+/* FIX Botpress scroll escaping */
+.bpMessageListContainer {
+  margin-bottom: 0 !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
+}
+
+
+
+.created-by-box:hover {
+    @apply bg-white/10 border-pink-500/50;
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.6), 0 0 40px rgba(236, 72, 153, 0.3);
+}
+
+.created-by-logo {
+    @apply flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-pink-500/20 to-purple-500/20 text-pink-400 transition-all duration-300;
+    box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+}
+
+.created-by-box:hover .created-by-logo {
+    @apply text-pink-300 scale-110;
+    box-shadow: inset 0 0 15px rgba(236, 72, 153, 0.4);
+}
