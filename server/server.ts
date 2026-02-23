@@ -34,9 +34,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: { 
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-        httpOnly: false, // Allow client-side access if needed
-        sameSite: 'lax', // Important for cross-origin requests
-        secure: false, // Set to false for localhost (true for HTTPS in production)
+        httpOnly: true, // Allow client-side access if needed
+        sameSite: 'none', // Important for cross-origin requests
+        secure: true, // Set to false for localhost (true for HTTPS in production)
     },
     store:MongoStore.create({
         mongoUrl : process.env.MONGODB_URI as string,
