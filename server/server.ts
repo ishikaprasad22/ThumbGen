@@ -22,6 +22,7 @@ await connectDB()
 
 const app = express();
 
+app.set('trust proxy', 1); 
 
 app.use(cors({
     origin: ['http://localhost:5173', 'http://localhost:3000','https://thumbgen-two.vercel.app'],
@@ -34,9 +35,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: { 
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-        httpOnly: true, // Allow client-side access if needed
-        sameSite: 'none', // Important for cross-origin requests
-        secure: true, // Set to false for localhost (true for HTTPS in production)
+        httpOnly: true,
+        sameSite: 'none', 
+        secure: true, 
     },
     store:MongoStore.create({
         mongoUrl : process.env.MONGODB_URI as string,
