@@ -12,11 +12,14 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@google-cloud/vertexai": "^1.10.0",
     "@google/genai": "^1.38.0",
     "axios": "^1.13.4",
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "cloudinary": "^2.9.0",
     "connect-mongo": "^6.0.0",
@@ -25,8 +28,7 @@
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "mongoose": "^9.1.5",
-    "multer": "^2.0.2",
-    "node": "^25.4.0"
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
