@@ -82,20 +82,6 @@ export const generateThumbnail = async (req: Request, res: Response) => {
 
     
     // CLOUDINARY TEXT OVERLAY 
-    function formatTitle(title: string) {
-  const words = title.toUpperCase().split(" ");
-
-  if (words.length <= 2) {
-    return title.toUpperCase();
-  }
-
-  const mid = Math.ceil(words.length / 2);
-
-  const line1 = words.slice(0, mid).join(" ");
-  const line2 = words.slice(mid).join(" ");
-
-  return `${line1}\n${line2}`;
-}
 //auto split title into 2 lines
     
 const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
