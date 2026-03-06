@@ -43,6 +43,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
     const fontSize = getFontSize(lineCount);
     const fontStyle = getFontStyle(style);
     const layout = getLayout(textLayout);
+    
 
     //  AI PROMPT (NO TEXT)
     const prompt = generateThumbnailPrompt( aspectRatio, stylePrompt, colorPrompt, additionalDetails);
@@ -68,7 +69,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
       imageBuffer = await generateImageWithClipdrop(prompt);
     }
 
-    // CLOUDINARY UPLOAD 
+  // CLOUDINARY UPLOAD 
     const uploadResult: any = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: "thumbnails", resource_type: "image" },
@@ -79,8 +80,25 @@ export const generateThumbnail = async (req: Request, res: Response) => {
 
     if (!uploadResult?.public_id) throw new Error("Cloudinary upload failed");
 
+    
     // CLOUDINARY TEXT OVERLAY 
-   const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
+    function formatTitle(title: string) {
+  const words = title.toUpperCase().split(" ");
+
+  if (words.length <= 2) {
+    return title.toUpperCase();
+  }
+
+  const mid = Math.ceil(words.length / 2);
+
+  const line1 = words.slice(0, mid).join(" ");
+  const line2 = words.slice(mid).join(" ");
+
+  return `${line1}\n${line2}`;
+}
+//auto split title into 2 lines
+    
+const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
 
 const finalImageUrl = cloudinary.url(uploadResult.public_id, {
   transformation: [
@@ -113,7 +131,8 @@ const finalImageUrl = cloudinary.url(uploadResult.public_id, {
       },
       color: "white",
       gravity: "south",
-      y: 60,
+      x: layout.x,
+      y: layout.y,
       effect: "shadow:80"
     }
   ]
