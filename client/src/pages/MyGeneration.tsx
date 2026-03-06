@@ -219,7 +219,7 @@ const MyGeneration = () => {
                   <div className={`relative overflow-hidden ${aspectClass} bg-black`}>
                     {hasImage ? (
                       <img
-                        src={thumb.image_url}
+                        src={`${thumb.image_url}?t=${Date.now()}`}
                         alt={thumb.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {
