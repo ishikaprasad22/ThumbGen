@@ -80,7 +80,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
     if (!uploadResult?.public_id) throw new Error("Cloudinary upload failed");
 
     // CLOUDINARY TEXT OVERLAY 
-    const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
+   const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
 
 const finalImageUrl = cloudinary.url(uploadResult.public_id, {
   transformation: [
@@ -96,7 +96,12 @@ const finalImageUrl = cloudinary.url(uploadResult.public_id, {
     },
 
     {
-      effect: "vignette:30"
+      overlay: "black",
+      width: 1.0,
+      height: 0.35,
+      gravity: "south",
+      opacity: 50,
+      crop: "fill"
     },
 
     {
@@ -108,7 +113,7 @@ const finalImageUrl = cloudinary.url(uploadResult.public_id, {
       },
       color: "white",
       gravity: "south",
-      y: 70,
+      y: 60,
       effect: "shadow:80"
     }
   ]
