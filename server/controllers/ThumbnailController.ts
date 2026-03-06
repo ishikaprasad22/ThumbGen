@@ -80,33 +80,50 @@ export const generateThumbnail = async (req: Request, res: Response) => {
     if (!uploadResult?.public_id) throw new Error("Cloudinary upload failed");
 
     // CLOUDINARY TEXT OVERLAY 
-     const encodedTitle = title.toUpperCase();
+    
+     const encodedTitle = displayTitle;
 
-      const finalImageUrl = cloudinary.url(uploadResult.public_id, {
-        transformation: [
-          {
-            crop: "fill",
-            width: 1280,
-            height: 720
-          },
-          {
-            effect: "gradient_fade",
-            y: "0.8"
-          },
-          {
-            overlay: {
-              font_family: "Impact",
-              font_size: 120,
-              font_weight: "bold",
-              text: encodedTitle
-            },
-            color: "white",
-            gravity: "south",
-            y: 80,
-            border: "8px_solid_black"
-          }
-        ]
-      });
+const finalImageUrl = cloudinary.url(uploadResult.public_id, {
+  transformation: [
+    {
+      crop: "fill",
+      width: 1280,
+      height: 720,
+      gravity: "auto"
+    },
+
+    {
+      effect: "contrast:20"
+    },
+
+    {
+      overlay: "gradient:black",
+      width: "1.0",
+      height: "0.35",
+      gravity: "south",
+      opacity: 60,
+      crop: "fill"
+    },
+
+    {
+      effect: "vignette:30"
+    },
+
+    {
+      overlay: {
+        font_family: "Impact",
+        font_size: fontSize,
+        font_weight: "bold",
+        letter_spacing: 8,
+        text: encodedTitle
+      },
+      color: "white",
+      gravity: "south_auto",
+      y: 60,
+      effect: "shadow:80"
+    }
+  ]
+});
 
     // ---------------- DB UPDATE ----------------
     const updated = await Thumbnail.findByIdAndUpdate(
