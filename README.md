@@ -112,6 +112,3 @@ MIT License — feel free to use, modify, and distribute.
 If you like this project, give it a ⭐ and share it with friends! ✨
 
 ---
-
-
-Do you want me to make those custom GIFs next?
