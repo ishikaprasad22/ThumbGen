@@ -45,9 +45,13 @@ export const generateThumbnail = async (req: Request, res: Response) => {
     const layout = getLayout(textLayout);
     
 
-    //  AI PROMPT (NO TEXT)
-    const prompt = generateThumbnailPrompt( aspectRatio, stylePrompt, colorPrompt, additionalDetails);
-
+    //  AI PROMPT
+  const prompt = generateThumbnailPrompt(
+    aspectRatio,
+    stylePrompt,
+    colorPrompt,
+    `${additionalDetails || ""} Include the title "${title}" visibly on the thumbnail.`
+  );
     // DB INIT
     thumbnail = await Thumbnail.create({
       userId,
@@ -70,66 +74,55 @@ try {
   imageBuffer = await generateImageWithClipdrop(prompt);
 }
 
-// ✅ Ensure buffer exists
+// Ensure buffer exists
 if (!imageBuffer || !imageBuffer.length) {
   throw new Error("AI image generation failed: empty buffer");
 }
-  // CLOUDINARY UPLOAD 
- const uploadResult: any = await new Promise((resolve, reject) => {
+ // CLOUDINARY UPLOAD
+const uploadResult: any = await new Promise((resolve, reject) => {
   const stream = cloudinary.uploader.upload_stream(
     { folder: "thumbnails", resource_type: "image" },
-    (error, result) => {
-      if (error) {
-        console.error("Cloudinary upload error:", error);
-        reject(error);
-      } else {
-        console.log("Cloudinary upload result:", result);
-        resolve(result);
-      }
-    }
+    (error, result) => (error ? reject(error) : resolve(result))
   );
   stream.end(imageBuffer);
 });
 
-if (!uploadResult?.public_id) throw new Error("Cloudinary upload failed");
-
-    
-    // CLOUDINARY TEXT OVERLAY 
-//auto split title into 2 lines
+// Fallback: always use secure_url
+let finalImageUrl: string;
+if (!uploadResult?.public_id) {
+  console.warn("Cloudinary public_id missing, using secure_url fallback");
+  finalImageUrl = uploadResult?.secure_url || "";
+} else {
+  // Optional overlay (styling only)
   const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
-const finalImageUrl = cloudinary.url(uploadResult.public_id, {
-  transformation: [
-    {
-      crop: "fill",
-      width: 1280,
-      height: 720,
-      gravity: "auto"
-    },
-    { effect: "contrast:20" },
-    {
-      overlay: { background: "black" },
-      width: "1.0",
-      height: lineCount > 1 ? "0.42" : "0.32",
-      flags: "relative",
-      gravity: "south",
-      opacity: 50
-    },
-    {
-      overlay: {
-        font_family: "Impact",
-        font_size: fontSize, // must be numeric
-        font_weight: "bold",
-        text: encodedTitle
+  finalImageUrl = cloudinary.url(uploadResult.public_id, {
+    transformation: [
+      { crop: "fill", width: 1280, height: 720, gravity: "auto" },
+      { effect: "contrast:20" },
+      {
+        overlay: { background: "black" },
+        width: "1.0",
+        height: lineCount > 1 ? "0.42" : "0.32",
+        flags: "relative",
+        gravity: "south",
+        opacity: 50
       },
-      color: "white",
-      gravity: "south",
-      x: layout.x,
-      y: layout.y,
-      effect: "shadow:80,outline:2"
-    }
-  ]
-});  
-
+      {
+        overlay: {
+          font_family: "Impact",
+          font_size: fontSize,
+          font_weight: "bold",
+          text: encodedTitle
+        },
+        color: "white",
+        gravity: "south",
+        x: layout.x,
+        y: layout.y,
+        effect: "shadow:80,outline:2"
+      }
+    ]
+  });
+}
 
     // ---------------- DB UPDATE ----------------
     const updated = await Thumbnail.findByIdAndUpdate(
