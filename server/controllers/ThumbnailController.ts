@@ -78,7 +78,7 @@ try {
 if (!imageBuffer || !imageBuffer.length) {
   throw new Error("AI image generation failed: empty buffer");
 }
- // CLOUDINARY UPLOAD
+// CLOUDINARY UPLOAD + SAFE OVERLAY
 const uploadResult: any = await new Promise((resolve, reject) => {
   const stream = cloudinary.uploader.upload_stream(
     { folder: "thumbnails", resource_type: "image" },
@@ -87,13 +87,10 @@ const uploadResult: any = await new Promise((resolve, reject) => {
   stream.end(imageBuffer);
 });
 
-// Fallback: always use secure_url
+// Ensure we always have a valid URL
 let finalImageUrl: string;
-if (!uploadResult?.public_id) {
-  console.warn("Cloudinary public_id missing, using secure_url fallback");
-  finalImageUrl = uploadResult?.secure_url || "";
-} else {
-  // Optional overlay (styling only)
+
+if (uploadResult?.public_id) {
   const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
   finalImageUrl = cloudinary.url(uploadResult.public_id, {
     transformation: [
@@ -122,7 +119,11 @@ if (!uploadResult?.public_id) {
       }
     ]
   });
+} else {
+  console.warn("Cloudinary public_id missing, skipping overlay (title already in AI image)");
+  finalImageUrl = uploadResult?.secure_url || "";
 }
+
 
     // ---------------- DB UPDATE ----------------
     const updated = await Thumbnail.findByIdAndUpdate(
