@@ -87,33 +87,38 @@ const uploadResult: any = await new Promise((resolve, reject) => {
   stream.end(imageBuffer);
 });
 
-// Ensure we always have a valid URL
-let finalImageUrl: string;
+// Always keep the base secure URL as a guaranteed valid fallback
+let finalImageUrl: string = uploadResult?.secure_url || uploadResult?.url || "";
 
 if (uploadResult?.public_id) {
-  const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
-  finalImageUrl = cloudinary.url(uploadResult.public_id, {
-    transformation: [
-      { crop: "fill", width: 1280, height: 720, gravity: "auto" },
-      { effect: "contrast:20" },
-      {
-        overlay: {
-          font_family: "Impact",
-          font_size: fontSize,
-          font_weight: "bold",
-          text: encodedTitle
+  // Remove special characters from title to avoid invalid text transformations
+  const safeTitle = displayTitle.replace(/[^a-zA-Z0-9\s]/g, "").trim().toUpperCase();
+
+  if (safeTitle) {
+    const transformedUrl = cloudinary.url(uploadResult.public_id, {
+      secure: true,
+      transformation: [
+        { crop: "fill", width: 1280, height: 720, gravity: "auto" },
+        {
+          overlay: {
+            font_family: "Impact",
+            font_size: fontSize,
+            font_weight: "bold",
+            text: safeTitle,
+          },
+          color: "white",
+          gravity: layout.gravity,
+          x: layout.x,
+          y: layout.y,
         },
-        color: "white",
-        gravity: "south",
-        x: layout.x,
-        y: layout.y,
-        effect: "shadow:80,outline:2"
-      }
-    ]
-  });
+      ],
+    });
+
+    // Use transformed URL only if it was generated; otherwise keep secure_url fallback.
+    if (transformedUrl) finalImageUrl = transformedUrl;
+  }
 } else {
-  console.warn("Cloudinary public_id missing, skipping overlay (title already in AI image)");
-  finalImageUrl = uploadResult?.secure_url || "";
+  console.warn("Cloudinary public_id missing, using secure_url without overlay");
 }
 
 
