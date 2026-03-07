@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ghibliImage from "../assets/ghibli.jpg";
 
 export default function About() {
   const [showMore, setShowMore] = useState(false);
@@ -133,7 +134,7 @@ export default function About() {
           {/* LEFT: Image */}
           <div className="rounded-2xl overflow-hidden border border-white/10 h-full min-h-[500px]">
             <img
-              src="/src/assets/ghibli.jpg"
+              src={ghibliImage}
               alt="Creator showcase"
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             />
