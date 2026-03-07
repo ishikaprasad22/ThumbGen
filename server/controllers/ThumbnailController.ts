@@ -84,7 +84,7 @@ export const generateThumbnail = async (req: Request, res: Response) => {
     // CLOUDINARY TEXT OVERLAY 
 //auto split title into 2 lines
     
-const encodedTitle = displayTitle.toUpperCase();
+const encodedTitle = encodeURIComponent(displayTitle.toUpperCase());
 const finalImageUrl = cloudinary.url(uploadResult.public_id, {
   transformation: [
     {
@@ -93,20 +93,19 @@ const finalImageUrl = cloudinary.url(uploadResult.public_id, {
       height: 720,
       gravity: "auto"
     },
-
     {
       effect: "contrast:20"
     },
-
     {
-      overlay: "black",
-      width: 1.0,
-      height: lineCount > 1 ? 0.42 : 0.32,
+      overlay: {
+        background: "black"
+      },
+      width: "1.0",
+      height: lineCount > 1 ? "0.42" : "0.32",
+      flags: "relative",
       gravity: "south",
-      opacity: 50,
-      crop: "fill"
+      opacity: 50
     },
-
     {
       overlay: {
         font_family: "Impact",
