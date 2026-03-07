@@ -97,14 +97,6 @@ if (uploadResult?.public_id) {
       { crop: "fill", width: 1280, height: 720, gravity: "auto" },
       { effect: "contrast:20" },
       {
-        overlay: { background: "black" },
-        width: "1.0",
-        height: lineCount > 1 ? "0.42" : "0.32",
-        flags: "relative",
-        gravity: "south",
-        opacity: 50
-      },
-      {
         overlay: {
           font_family: "Impact",
           font_size: fontSize,
