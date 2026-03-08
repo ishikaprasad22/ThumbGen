@@ -56,7 +56,7 @@ Turn ideas into **eye-catching thumbnails** in seconds and get instant guidance 
 * **Backend:** Node.js + Express ⚡
 * **Database:** MongoDB 🗄️
 * **Cloud Storage:** Cloudinary ☁️
-* **AI:** OpenAI / Imagen 🤖
+* **AI:** Imagen 🤖
 * **Chatbot:** Botpress 💬
 * **Deployment:** Vercel 🚀
 
