@@ -4,6 +4,7 @@ export interface IUser extends Document{
   name: string;
   email: string;
   password?: string;
+  generationLockUntil?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -17,7 +18,8 @@ const UserSchema = new mongoose.Schema<IUser>({
     unique: true,
     lowercase: true
   },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  generationLockUntil: { type: Date, default: null }
 }, { timestamps: true })
 const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 export default User;

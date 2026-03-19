@@ -9,6 +9,7 @@ import MongoStore from 'connect-mongo'
 import AuthRouter from './routes/AuthRoutes.js';
 import ThumbnailRouter from './routes/ThumbnailRoutes.js';
 import UserRouter from './routes/UserRoutes.js';
+import { apiLimiter } from './middlewares/rateLimit.js';
 
 
 declare module 'express-session' {
@@ -45,6 +46,7 @@ app.use(session({
     })
 }))
 app.use(express.json())
+app.use('/api', apiLimiter)
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Server is Live!');

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import cloudinary from "../configs/cloudinary.js";
 import Thumbnail from "../models/Thumbnail.js";
+import User from "../models/User.js";
 import { stylePrompts, colorSchemeDescriptions } from "../configs/prompts.js";
 import { formatThumbnailTitle, getFontSize, getFontStyle, generateThumbnailPrompt } from "./thumbnailsHelpers.js";
 import { generateImageWithImagen } from "../services/imagen.js";
@@ -21,10 +22,36 @@ const getLayout = (layout: string = "bottom") => {
 /*GENERATE THUMBNAIL */
 export const generateThumbnail = async (req: Request, res: Response) => {
   let thumbnail: any = null;
+  let lockAcquired = false;
+  let currentUserId: string | undefined;
 
   try {
     const { userId } = req.session as { userId?: string };
     if (!userId) return res.status(401).json({ message: "User not authenticated" });
+    currentUserId = userId;
+
+    const now = new Date();
+    const lockUntil = new Date(now.getTime() + 60 * 1000);
+    const lockedUser = await User.findOneAndUpdate(
+      {
+        _id: userId,
+        $or: [
+          { generationLockUntil: { $exists: false } },
+          { generationLockUntil: null },
+          { generationLockUntil: { $lt: now } },
+        ],
+      },
+      { generationLockUntil: lockUntil },
+      { new: true }
+    );
+
+    if (!lockedUser) {
+      return res.status(429).json({
+        message: "A thumbnail is already being generated for this account. Please wait.",
+      });
+    }
+
+    lockAcquired = true;
 
     const { title, style, aspectRatio, colorSchemeId, additionalDetails, textLayout } = req.body;
     if (!title || !style || !aspectRatio || !colorSchemeId)
@@ -135,6 +162,10 @@ if (uploadResult?.public_id) {
     console.error("[generateThumbnail]", error);
     if (thumbnail) await Thumbnail.findByIdAndUpdate(thumbnail._id, { isGenerating: false }).catch(() => {});
     return res.status(500).json({ message: error.message || "Internal Server Error" });
+  } finally {
+    if (lockAcquired && currentUserId) {
+      await User.findByIdAndUpdate(currentUserId, { $unset: { generationLockUntil: 1 } }).catch(() => {});
+    }
   }
 };
 export const deleteThumbnail = async (req: Request, res: Response) => {
