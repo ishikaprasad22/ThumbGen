@@ -91,22 +91,6 @@ Open [http://localhost:5173](http://localhost:5173) to view locally.
 
 ---
 
-## 💡 Contributing 
-
-1. Fork the repository 🍴
-2. Create your feature branch (`git checkout -b feature-name`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature-name`)
-5. Open a Pull Request 🔥
-
----
-
-## 📜 License 
-
-MIT License — feel free to use, modify, and distribute.
-
----
-
 ## 🌟 Support 
 
 If you like this project, give it a ⭐ and share it with friends! ✨
